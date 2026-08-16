@@ -19,11 +19,6 @@ import {
 
 import { useNavigate, useLocation } from "react-router-dom";
 
-
-
-
-
-
 interface SidebarItemProps {
     icon: React.ReactNode;
     label: string;
@@ -197,7 +192,7 @@ export default function Sidebar() {
             {/* SEARCH */}
             {/* ================================= */}
 
-            <div className="px-4 mb-5">
+            {/* <div className="px-4 mb-5">
 
                 <button
                     className="
@@ -253,7 +248,7 @@ export default function Sidebar() {
 
                 </button>
 
-            </div>
+            </div> */}
 
 
             {/* ================================= */}
@@ -291,36 +286,50 @@ export default function Sidebar() {
                     <SidebarItem
                         icon={<CheckSquare size={16} />}
                         label="Tasks"
+                        active={location.pathname.startsWith("/tasks")}
+                        onClick={() => navigate("/tasks")}
                     />
 
                     <SidebarItem
                         icon={<CalendarDays size={16} />}
                         label="Calendar"
+                        active={location.pathname.startsWith("/calendar")}
+                        onClick={() => navigate("/calendar")}
                     />
 
                     <SidebarItem
                         icon={<Goal size={16} />}
                         label="Goals"
+                        active={location.pathname.startsWith("/goals")}
+                        onClick={() => navigate("/goals")}
                     />
 
                     <SidebarItem
                         icon={<BarChart3 size={16} />}
                         label="Analytics"
+                        active={location.pathname.startsWith("/analytics")}
+                        onClick={() => navigate("/analytics")}
                     />
 
                     <SidebarItem
                         icon={<MessageSquare size={16} />}
                         label="AI Chat"
+                        active={location.pathname.startsWith("/ai-chat")}
+                        onClick={() => navigate("/ai-chat")}
                     />
 
                     <SidebarItem
                         icon={<Zap size={16} />}
                         label="Habits"
+                        active={location.pathname.startsWith("/habits")}
+                        onClick={() => navigate("/habits")}
                     />
 
                     <SidebarItem
                         icon={<Clock3 size={16} />}
                         label="Focus Timer"
+                        active={location.pathname.startsWith("/focus-timer")}
+                        onClick={() => navigate("/focus-timer")}
                     />
 
                 </div>
@@ -352,11 +361,15 @@ export default function Sidebar() {
                         <SidebarItem
                             icon={<Settings size={16} />}
                             label="Settings"
+                            active={location.pathname.startsWith("/settings")}
+                            onClick={() => navigate("/settings")}
                         />
 
                         <SidebarItem
                             icon={<UserCircle size={16} />}
                             label="Profile"
+                            active={location.pathname.startsWith("/profile")}
+                            onClick={() => navigate("/profile")}
                         />
 
                     </div>

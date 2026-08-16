@@ -30,15 +30,6 @@ export default function Plans() {
                         </p>
                     </div>
 
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        leftIcon={<Plus size={15} />}
-                        className="shrink-0"
-                    >
-                        New Plan
-                    </Button>
-
                 </div>
 
             </section>
