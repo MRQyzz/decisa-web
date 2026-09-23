@@ -12,44 +12,67 @@ import {
 
 import Button from "../../components/ui/button.tsx";
 
-function Toggle({ defaultChecked = false }: { defaultChecked?: boolean }) {
+function Toggle({
+    defaultChecked = false,
+}: {
+    defaultChecked?: boolean;
+}) {
     const [checked, setChecked] = useState(defaultChecked);
 
     return (
         <button
+            type="button"
+            role="switch"
+            aria-checked={checked}
             onClick={() => setChecked((c) => !c)}
             className={`
                 relative
-
                 h-5
                 w-9
-
                 shrink-0
 
                 rounded-full
 
                 transition-colors
                 duration-200
+                ease-out
 
-                ${checked ? "bg-indigo-500" : "bg-white/10"}
+                focus:outline-none
+                focus-visible:ring-2
+                focus-visible:ring-indigo-400/50
+                focus-visible:ring-offset-2
+                focus-visible:ring-offset-[#09090b]
+
+                ${
+                    checked
+                        ? "bg-indigo-500"
+                        : "bg-white/10"
+                }
             `}
         >
             <span
                 className={`
                     absolute
+                    left-0.5
                     top-0.5
 
                     h-4
                     w-4
 
                     rounded-full
-
                     bg-white
+
+                    shadow-sm
 
                     transition-transform
                     duration-200
+                    ease-out
 
-                    ${checked ? "translate-x-[18px]" : "translate-x-0.5"}
+                    ${
+                        checked
+                            ? "translate-x-4"
+                            : "translate-x-0"
+                    }
                 `}
             />
         </button>

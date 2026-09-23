@@ -1,401 +1,618 @@
+import { useEffect, useState } from "react";
+
 import {
-    Goal as GoalIcon,
-    Plus,
-    Trophy,
-    Target,
-    TrendingUp,
-    CheckCircle2,
-    Circle,
-    CalendarDays,
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  X,
+  Sparkles,
 } from "lucide-react";
 
-import Button from "../../components/ui/button.tsx";
+import { apiFetch } from "../../lib/api";
 
-interface Milestone {
-    label: string;
-    done: boolean;
-}
+import AnalyzeGoalModal, {
+  type GoalAnalysis,
+  type SuggestedTask,
+} from "./analyzeGoalsModal";
 
-interface GoalCard {
-    icon: string;
-    iconColor: string;
-    iconBg: string;
-    title: string;
-    description: string;
-    progress: number;
-    barFrom: string;
-    barTo: string;
-    deadline: string;
-    milestones: Milestone[];
-}
+type Goal = {
+  id: string;
+  title: string;
+  description: string | null;
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  targetDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
 
-const goals: GoalCard[] = [
-    {
-        icon: "🏆",
-        iconColor: "text-indigo-400",
-        iconBg: "bg-indigo-500/10",
-        title: "Place Top 10 in Math Competition",
-        description: "Sharpen problem-solving speed and accuracy for the regional finals.",
-        progress: 68,
-        barFrom: "from-indigo-500",
-        barTo: "to-violet-500",
-        deadline: "Oct 15, 2026",
-        milestones: [
-            { label: "Finish algebra & calculus review", done: true },
-            { label: "Complete 5 past-year problem sets", done: true },
-            { label: "Score 80%+ on mock test", done: false },
-            { label: "Attend regional prep workshop", done: false },
-        ],
-    },
-    {
-        icon: "🚀",
-        iconColor: "text-violet-400",
-        iconBg: "bg-violet-500/10",
-        title: "Ship Decisa AI v1.0",
-        description: "Launch a working end-to-end AI decision assistant platform.",
-        progress: 82,
-        barFrom: "from-violet-500",
-        barTo: "to-purple-500",
-        deadline: "Sep 30, 2026",
-        milestones: [
-            { label: "Build FastAPI + SQLite backend", done: true },
-            { label: "Connect Anthropic API", done: true },
-            { label: "Finish frontend page layouts", done: false },
-            { label: "Deploy production build", done: false },
-        ],
-    },
-    {
-        icon: "💻",
-        iconColor: "text-cyan-400",
-        iconBg: "bg-cyan-500/10",
-        title: "Master React & TypeScript",
-        description: "Get fluent enough to build production-grade frontends independently.",
-        progress: 45,
-        barFrom: "from-cyan-500",
-        barTo: "to-blue-500",
-        deadline: "Dec 1, 2026",
-        milestones: [
-            { label: "Learn hooks & state management", done: true },
-            { label: "Build 3 practice projects", done: false },
-            { label: "Learn server components", done: false },
-        ],
-    },
-    {
-        icon: "🏃",
-        iconColor: "text-emerald-400",
-        iconBg: "bg-emerald-500/10",
-        title: "Stay Consistent with Exercise",
-        description: "Build a sustainable habit of daily movement and fitness.",
-        progress: 57,
-        barFrom: "from-emerald-500",
-        barTo: "to-teal-500",
-        deadline: "Ongoing",
-        milestones: [
-            { label: "Exercise 4x per week for a month", done: true },
-            { label: "Reach a 14-day streak", done: false },
-        ],
-    },
-];
+type GoalsResponse = {
+  success: boolean;
+  data: Goal[];
+};
 
-const stats = [
-    {
-        label: "Active Goals",
-        value: "4",
-        icon: <Target size={16} />,
-        color: "text-indigo-400",
-        bg: "bg-indigo-500/10",
-    },
-    {
-        label: "Completed",
-        value: "9",
-        icon: <Trophy size={16} />,
-        color: "text-amber-400",
-        bg: "bg-amber-500/10",
-    },
-    {
-        label: "Avg. Progress",
-        value: "63%",
-        icon: <TrendingUp size={16} />,
-        color: "text-emerald-400",
-        bg: "bg-emerald-500/10",
-    },
-];
+type GoalResponse = {
+  success: boolean;
+  data: Goal;
+};
+
+type AnalyzeResponse = {
+  success: boolean;
+  data: {
+    analysis: GoalAnalysis;
+    suggestedTasks: SuggestedTask[];
+  };
+};
+
+type CreateTaskResponse = {
+  success: boolean;
+  data: {
+    id: string;
+  };
+};
+
+type GoalForm = {
+  title: string;
+  description: string;
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  targetDate: string;
+};
+
+const emptyForm: GoalForm = {
+  title: "",
+  description: "",
+  priority: "MEDIUM",
+  targetDate: "",
+};
 
 export default function Goals() {
-    return (
-        <main
-            className="
-                w-full
-                max-w-[1600px]
-                mx-auto
+  const [goals, setGoals] = useState<Goal[]>([]);
 
-                px-4
-                sm:px-5
-                lg:px-7
-                xl:px-8
+  const [loading, setLoading] = useState(true);
 
-                py-6
-            "
-        >
-            {/* ========================================= */}
-            {/* HEADER */}
-            {/* ========================================= */}
+  const [error, setError] = useState<string | null>(null);
 
-            <section className="mb-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight text-white">
-                            Goals
-                        </h1>
+  const [search, setSearch] = useState("");
 
-                        <p className="mt-1 text-sm text-slate-400">
-                            Track the milestones behind every plan.
-                        </p>
-                    </div>
+  const [showModal, setShowModal] = useState(false);
 
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        leftIcon={<Plus size={15} />}
-                        className="shrink-0"
-                    >
-                        New Goal
-                    </Button>
-                </div>
-            </section>
+  const [editingGoal, setEditingGoal] =
+    useState<Goal | null>(null);
 
-            {/* ========================================= */}
-            {/* STATS */}
-            {/* ========================================= */}
+  const [form, setForm] =
+    useState<GoalForm>(emptyForm);
 
-            <section className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {stats.map((stat) => (
-                    <div
-                        key={stat.label}
-                        className="
-                            flex
-                            items-center
-                            gap-3
+  const [saving, setSaving] = useState(false);
 
-                            rounded-xl
-                            border
-                            border-white/[0.07]
+  // =========================
+  // Goal Analysis State
+  // =========================
 
-                            bg-white/[0.035]
+  const [analysis, setAnalysis] =
+    useState<AnalyzeResponse["data"] | null>(null);
 
-                            p-4
+  const [analyzingGoal, setAnalyzingGoal] =
+    useState<Goal | null>(null);
 
-                            backdrop-blur-xl
-                        "
-                    >
-                        <div
-                            className={`
-                                flex
-                                h-9
-                                w-9
-                                shrink-0
-                                items-center
-                                justify-center
+  const [analyzingId, setAnalyzingId] =
+    useState<string | null>(null);
 
-                                rounded-lg
+  // =========================
+  // Load Goals
+  // =========================
 
-                                ${stat.bg}
-                                ${stat.color}
-                            `}
-                        >
-                            {stat.icon}
-                        </div>
+  async function loadGoals() {
+    try {
+      setLoading(true);
+      setError(null);
 
-                        <div>
-                            <p className="text-lg font-semibold tracking-tight text-white">
-                                {stat.value}
-                            </p>
+      const result =
+        await apiFetch<GoalsResponse>(
+          "/api/goals",
+        );
 
-                            <p className="text-[11px] text-slate-400">
-                                {stat.label}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-            </section>
+      setGoals(result.data);
+    } catch (error) {
+      console.error(
+        "Load goals error:",
+        error,
+      );
 
-            {/* ========================================= */}
-            {/* GOAL CARDS */}
-            {/* ========================================= */}
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load goals",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
-            <section
-                className="
-                    grid
-                    grid-cols-1
-                    gap-4
+  useEffect(() => {
+    loadGoals();
+  }, []);
 
-                    xl:grid-cols-2
-                "
+  // =========================
+  // Create / Edit Goal
+  // =========================
+
+  function openCreateModal() {
+    setEditingGoal(null);
+    setForm(emptyForm);
+    setShowModal(true);
+  }
+
+  function openEditModal(goal: Goal) {
+    setEditingGoal(goal);
+
+    setForm({
+      title: goal.title,
+      description: goal.description ?? "",
+      priority: goal.priority,
+      targetDate: goal.targetDate
+        ? goal.targetDate.slice(0, 10)
+        : "",
+    });
+
+    setShowModal(true);
+  }
+
+  function closeModal() {
+    if (saving) return;
+
+    setShowModal(false);
+    setEditingGoal(null);
+    setForm(emptyForm);
+  }
+
+  async function handleSave() {
+    if (!form.title.trim()) return;
+
+    try {
+      setSaving(true);
+
+      const body = {
+        title: form.title.trim(),
+        description:
+          form.description.trim() ||
+          undefined,
+        priority: form.priority,
+        targetDate:
+          form.targetDate || undefined,
+      };
+
+      if (editingGoal) {
+        const result =
+          await apiFetch<GoalResponse>(
+            `/api/goals/${editingGoal.id}`,
+            {
+              method: "PATCH",
+              body: JSON.stringify(body),
+            },
+          );
+
+        setGoals((current) =>
+          current.map((goal) =>
+            goal.id === editingGoal.id
+              ? result.data
+              : goal,
+          ),
+        );
+      } else {
+        const result =
+          await apiFetch<GoalResponse>(
+            "/api/goals",
+            {
+              method: "POST",
+              body: JSON.stringify(body),
+            },
+          );
+
+        setGoals((current) => [
+          result.data,
+          ...current,
+        ]);
+      }
+
+      closeModal();
+    } catch (error) {
+      console.error(
+        "Save goal error:",
+        error,
+      );
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to save goal",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // =========================
+  // Delete Goal
+  // =========================
+
+  async function handleDelete(goal: Goal) {
+    if (
+      !window.confirm(
+        `Delete "${goal.title}"?`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await apiFetch(
+        `/api/goals/${goal.id}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      setGoals((current) =>
+        current.filter(
+          (item) => item.id !== goal.id,
+        ),
+      );
+    } catch (error) {
+      console.error(
+        "Delete goal error:",
+        error,
+      );
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete goal",
+      );
+    }
+  }
+
+  // =========================
+  // Analyze Goal
+  // =========================
+
+  async function handleAnalyze(goal: Goal) {
+    try {
+      setAnalyzingId(goal.id);
+
+      const result =
+        await apiFetch<AnalyzeResponse>(
+          `/api/goals/${goal.id}/analyze`,
+          {
+            method: "POST",
+          },
+        );
+
+      setAnalyzingGoal(goal);
+      setAnalysis(result.data);
+    } catch (error) {
+      console.error(
+        "Analyze goal error:",
+        error,
+      );
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to analyze goal",
+      );
+    } finally {
+      setAnalyzingId(null);
+    }
+  }
+
+  // =========================
+  // Add Suggested Task
+  // =========================
+
+  async function handleAcceptTask(
+    task: SuggestedTask,
+  ) {
+    try {
+      await apiFetch<CreateTaskResponse>(
+        "/api/tasks",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            estimatedMinutes:
+              task.estimatedMinutes,
+          }),
+        },
+      );
+    } catch (error) {
+      console.error(
+        "Create suggested task error:",
+        error,
+      );
+
+      throw error;
+    }
+  }
+
+  // =========================
+  // Close Analysis
+  // =========================
+
+  function closeAnalysis() {
+    setAnalysis(null);
+    setAnalyzingGoal(null);
+  }
+
+  const filteredGoals = goals.filter((goal) =>
+    goal.title
+      .toLowerCase()
+      .includes(search.toLowerCase()),
+  );
+
+  return (
+    <main className="min-h-screen p-4 sm:p-6 lg:p-8">
+
+      {/* Header */}
+      <section className="mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-white">
+              Goals
+            </h1>
+
+            <p className="mt-1 text-sm text-slate-400">
+              Define goals and let Decisa help you analyze them.
+            </p>
+          </div>
+
+          <button
+            onClick={openCreateModal}
+            className="flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-400"
+          >
+            <Plus size={16} />
+            New Goal
+          </button>
+        </div>
+      </section>
+
+      {/* Search */}
+      <div className="relative mb-6">
+        <Search
+          size={16}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+        />
+
+        <input
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+          placeholder="Search goals..."
+          className="h-10 w-full rounded-lg border border-white/10 bg-white/[0.025] pl-9 text-sm text-white outline-none placeholder:text-slate-500"
+        />
+      </div>
+
+      {/* Loading */}
+      {loading ? (
+        <p className="text-sm text-slate-400">
+          Loading goals...
+        </p>
+      ) : error ? (
+        <div className="rounded-xl border border-red-400/20 bg-red-400/5 p-4">
+          <p className="text-sm text-red-400">
+            Failed to load goals
+          </p>
+
+          <p className="mt-1 text-xs text-slate-500">
+            {error}
+          </p>
+
+          <button
+            onClick={loadGoals}
+            className="mt-3 text-xs text-indigo-400"
+          >
+            Try again
+          </button>
+        </div>
+      ) : filteredGoals.length === 0 ? (
+        <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-8 text-center">
+          <p className="text-sm text-slate-400">
+            {search
+              ? "No goals match your search."
+              : "No goals yet."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filteredGoals.map((goal) => (
+            <div
+              key={goal.id}
+              className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"
             >
-                {goals.map((goal) => (
-                    <div
-                        key={goal.title}
-                        className="
-                            group
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-semibold text-white">
+                    {goal.title}
+                  </h2>
 
-                            rounded-2xl
-                            border
-                            border-white/10
+                  <p className="mt-1 text-sm text-slate-500">
+                    {goal.description ??
+                      "No description"}
+                  </p>
+                </div>
 
-                            bg-white/[0.025]
-                            backdrop-blur-xl
+                <div className="flex gap-1">
+                  <button
+                    onClick={() =>
+                      openEditModal(goal)
+                    }
+                    className="rounded-lg p-2 text-slate-500 hover:bg-white/5 hover:text-white"
+                  >
+                    <Pencil size={16} />
+                  </button>
 
-                            p-5
+                  <button
+                    onClick={() =>
+                      handleDelete(goal)
+                    }
+                    className="rounded-lg p-2 text-slate-500 hover:bg-red-400/10 hover:text-red-400"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
 
-                            transition-all
-                            duration-200
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="rounded-md bg-indigo-400/10 px-2 py-1 text-[11px] text-indigo-300">
+                  {goal.priority}
+                </span>
 
-                            hover:border-indigo-400/20
-                            hover:bg-white/[0.04]
-                        "
-                    >
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-start gap-3">
-                                <div
-                                    className={`
-                                        flex
-                                        h-10
-                                        w-10
-                                        shrink-0
-                                        items-center
-                                        justify-center
+                {goal.targetDate && (
+                  <span className="rounded-md bg-white/5 px-2 py-1 text-[11px] text-slate-400">
+                    Target{" "}
+                    {new Date(
+                      goal.targetDate,
+                    ).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
 
-                                        rounded-lg
+              <button
+                onClick={() =>
+                  handleAnalyze(goal)
+                }
+                disabled={
+                  analyzingId === goal.id
+                }
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border border-indigo-400/20 bg-indigo-400/5 px-3 py-2 text-sm text-indigo-300 transition hover:bg-indigo-400/10 disabled:opacity-50"
+              >
+                <Sparkles size={15} />
 
-                                        text-base
+                {analyzingId === goal.id
+                  ? "Analyzing..."
+                  : "Analyze Goal"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
-                                        ${goal.iconBg}
-                                    `}
-                                >
-                                    {goal.icon}
-                                </div>
+      {/* Create / Edit Goal Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#111113] p-6">
 
-                                <div className="min-w-0">
-                                    <h2 className="text-base font-semibold text-white">
-                                        {goal.title}
-                                    </h2>
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-white">
+                {editingGoal
+                  ? "Edit Goal"
+                  : "New Goal"}
+              </h2>
 
-                                    <p className="mt-1 text-sm leading-5 text-slate-400">
-                                        {goal.description}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+              <button
+                onClick={closeModal}
+                className="text-slate-500 hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-                        {/* Progress */}
+            <div className="space-y-4">
 
-                        <div className="mt-5">
-                            <div className="mb-2 flex items-center justify-between">
-                                <span className="text-xs text-slate-500">
-                                    Progress
-                                </span>
+              <input
+                value={form.title}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    title: e.target.value,
+                  })
+                }
+                placeholder="Goal title"
+                className="h-10 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 text-sm text-white"
+              />
 
-                                <span className="text-xs font-medium text-slate-300">
-                                    {goal.progress}%
-                                </span>
-                            </div>
+              <textarea
+                value={form.description}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    description:
+                      e.target.value,
+                  })
+                }
+                placeholder="Description"
+                rows={4}
+                className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white"
+              />
 
-                            <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                                <div
-                                    className={`
-                                        h-full
-                                        rounded-full
+              <select
+                value={form.priority}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    priority:
+                      e.target.value as GoalForm["priority"],
+                  })
+                }
+                className="h-10 w-full rounded-lg border border-white/10 bg-[#111113] px-3 text-sm text-white"
+              >
+                <option value="LOW">
+                  Low
+                </option>
 
-                                        bg-gradient-to-r
-                                        ${goal.barFrom}
-                                        ${goal.barTo}
-                                    `}
-                                    style={{ width: `${goal.progress}%` }}
-                                />
-                            </div>
-                        </div>
+                <option value="MEDIUM">
+                  Medium
+                </option>
 
-                        {/* Milestones */}
+                <option value="HIGH">
+                  High
+                </option>
+              </select>
 
-                        <div className="mt-4 space-y-2">
-                            {goal.milestones.map((milestone) => (
-                                <div
-                                    key={milestone.label}
-                                    className="flex items-center gap-2"
-                                >
-                                    {milestone.done ? (
-                                        <CheckCircle2
-                                            size={14}
-                                            className="shrink-0 text-emerald-400"
-                                        />
-                                    ) : (
-                                        <Circle
-                                            size={14}
-                                            className="shrink-0 text-slate-600"
-                                        />
-                                    )}
+              <input
+                type="date"
+                value={form.targetDate}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    targetDate:
+                      e.target.value,
+                  })
+                }
+                className="h-10 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 text-sm text-white"
+              />
 
-                                    <span
-                                        className={`
-                                            text-xs
+              <button
+                onClick={handleSave}
+                disabled={
+                  saving ||
+                  !form.title.trim()
+                }
+                className="h-10 w-full rounded-lg bg-indigo-500 text-sm font-medium text-white disabled:opacity-50"
+              >
+                {saving
+                  ? "Saving..."
+                  : editingGoal
+                    ? "Save Changes"
+                    : "Create Goal"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-                                            ${
-                                                milestone.done
-                                                    ? "text-slate-500 line-through"
-                                                    : "text-slate-300"
-                                            }
-                                        `}
-                                    >
-                                        {milestone.label}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Footer */}
-
-                        <div
-                            className="
-                                mt-5
-                                flex
-                                items-center
-                                justify-between
-
-                                border-t
-                                border-white/5
-
-                                pt-4
-                            "
-                        >
-                            <div
-                                className="
-                                    flex
-                                    items-center
-                                    gap-1.5
-
-                                    rounded-md
-                                    bg-white/[0.04]
-
-                                    px-2
-                                    py-1
-
-                                    text-[11px]
-                                    text-slate-400
-                                "
-                            >
-                                <GoalIcon size={12} />
-                                {goal.milestones.filter((m) => m.done).length}/
-                                {goal.milestones.length} milestones
-                            </div>
-
-                            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                <CalendarDays size={13} />
-                                {goal.deadline}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </section>
-        </main>
-    );
+      {/* AI Goal Analysis Modal */}
+      {analysis && analyzingGoal && (
+        <AnalyzeGoalModal
+          goalTitle={analyzingGoal.title}
+          analysis={analysis.analysis}
+          suggestedTasks={analysis.suggestedTasks}
+          onClose={closeAnalysis}
+          onAcceptTask={handleAcceptTask}
+        />
+      )}
+    </main>
+  );
 }

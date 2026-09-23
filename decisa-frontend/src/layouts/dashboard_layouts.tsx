@@ -1,38 +1,64 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import Sidebar from "../components/sidebar.tsx";
-import TopBar from "../components/dashboard/topbar.tsx";
+import TopBar from "../components/dashboard/topbar";
+import NewPlanModal from "../pages/plans/newPlansModal.tsx";
 
 export default function DashboardLayout() {
-    return (
-        <div className="min-h-screen">
+  const [showNewPlanModal, setShowNewPlanModal] = useState(false);
 
-            {/* ================================= */}
-            {/* SIDEBAR */}
-            {/* ================================= */}
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-            <Sidebar />
+  const [notification, setNotification] = useState<string | null>(null);
 
+  const handleNewPlan = () => {
+    setShowNewPlanModal(true);
+  };
 
-            {/* ================================= */}
-            {/* MAIN AREA */}
-            {/* ================================= */}
+  const handlePlanCreated = () => {
+    setNotification("Plan berhasil dibuat.");
 
-            <div className="lg:ml-64">
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
-                {/* Top Bar */}
+  return (
+    <div className="min-h-screen bg-[#09090B]">
+      {/* Sidebar */}
 
-                <TopBar />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)} 
+      />
 
+      {/* Main area */}
 
-                {/* Page Content */}
+      <div className="lg:ml-64">
+        <TopBar 
+            onNewPlan={handleNewPlan}
+            onMenuClick={() => setSidebarOpen(true)}
+            notification={notification}
+        />
 
-                <main>
-                    <Outlet />
-                </main>
+        {/* Page content */}
 
-            </div>
+        <main>
+          <Outlet />
+        </main>
+      </div>
 
-        </div>
-    );
+      {/* New Plan Modal */}
+
+      {showNewPlanModal && (
+        <NewPlanModal
+          onClose={() => setShowNewPlanModal(false)}
+          onCreated={handlePlanCreated}
+          onUpdated={() => {}}
+          editingPlan={null}
+        />
+      )}
+    </div>
+  );
 }

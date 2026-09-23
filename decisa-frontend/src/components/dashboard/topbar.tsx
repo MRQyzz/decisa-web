@@ -1,18 +1,24 @@
 import {
-    Bell,
-    CalendarDays,
-    ChevronDown,
-    Menu,
-    Plus,
-    Settings,
+  Bell,
+  CalendarDays,
+  ChevronDown,
+  Menu,
+  Plus,
+  Settings,
 } from "lucide-react";
 
 import Button from "../ui/button.tsx";
 
-export default function TopBar() {
-    return (
-        <header
-            className="
+interface TopBarProps {
+  onNewPlan: () => void;
+  notification?: string | null;
+  onMenuClick: () => void;
+}
+
+export default function TopBar({ onNewPlan, notification, onMenuClick }: TopBarProps) {
+  return (
+    <header
+      className="
                 w-full
 
                 border-b
@@ -21,14 +27,13 @@ export default function TopBar() {
                 bg-[#09090b]/40
                 backdrop-blur-xl
             "
-        >
+    >
+      {/* ================================= */}
+      {/* MAIN ROW */}
+      {/* ================================= */}
 
-            {/* ================================= */}
-            {/* MAIN ROW */}
-            {/* ================================= */}
-
-            <div
-                className="
+      <div
+        className="
                     h-[52px]
                     px-5
 
@@ -38,53 +43,51 @@ export default function TopBar() {
 
                     gap-3
                 "
-            >
+      >
+        {/* ================= LEFT ================= */}
 
-                {/* ================= LEFT ================= */}
+        <div
+          className="
+                    flex
+                    items-center
+                    gap-2.5
 
-                <div
-                    className="
-                        flex
-                        items-center
-                        gap-2.5
-
-                        min-w-0
+                    min-w-0
                     "
-                >
+        >
+          {/* Mobile Menu */}
 
-                    {/* Mobile Menu */}
+          <div className="lg:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onMenuClick}
+              className="
+                        w-10
+                        h-10
+                        p-0
 
-                    <div className="lg:hidden">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="
-                                w-8
-                                h-8
-                                p-0
+                        text-slate-400
+                        hover:text-white
+                        "
+            >
+              <Menu size={15} />
+            </Button>
+          </div>
 
-                                text-slate-400
-                                hover:text-white
-                            "
-                        >
-                            <Menu size={15} />
-                        </Button>
-                    </div>
+          {/* Breadcrumb */}
 
-                    {/* Breadcrumb */}
-
-                    <div
-                        className="
+          <div
+            className="
                             flex
                             items-center
                             gap-2
 
                             min-w-0
                         "
-                    >
-
-                        <span
-                            className="
+          >
+            <span
+              className="
                                 hidden
                                 sm:inline
 
@@ -93,23 +96,23 @@ export default function TopBar() {
                                 text-sm
                                 text-slate-400
                             "
-                        >
-                            Decisa AI
-                        </span>
+            >
+              Decisa AI
+            </span>
 
-                        <span
-                            className="
+            <span
+              className="
                                 hidden
                                 sm:inline
 
                                 text-slate-600
                             "
-                        >
-                            /
-                        </span>
+            >
+              /
+            </span>
 
-                        <span
-                            className="
+            <span
+              className="
                                 whitespace-nowrap
 
                                 text-[13px]
@@ -119,39 +122,31 @@ export default function TopBar() {
 
                                 text-slate-100
                             "
-                        >
-                            Dashboard
-                        </span>
+            >
+              Dashboard
+            </span>
+          </div>
+        </div>
 
-                    </div>
+        {/* ================= RIGHT ================= */}
 
-                </div>
-
-
-                {/* ================= RIGHT ================= */}
-
-                <div
-                    className="
+        <div
+          className="
                         hidden
                         md:flex
                         items-center
                         gap-2
                         shrink-0
                     "
-                >
+        >
+          {/* Date - Desktop */}
 
-                    {/* Date - Desktop */}
-
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        leftIcon={
-                            <CalendarDays size={14} />
-                        }
-                        rightIcon={
-                            <ChevronDown size={13} />
-                        }
-                        className="
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<CalendarDays size={14} />}
+            rightIcon={<ChevronDown size={13} />}
+            className="
                             h-9
                             px-3.5
                             whitespace-nowrap
@@ -159,54 +154,51 @@ export default function TopBar() {
                             rounded-xl
                             text-sm
                         "
-                    >
-                        This Week · Aug 3 — Aug 9
-                    </Button>
+          >
+            This Week · Aug 3 — Aug 9
+          </Button>
 
+          {/* New Plan - Desktop */}
 
-                    {/* New Plan - Desktop */}
-
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        leftIcon={
-                            <Plus size={15} />
-                        }
-                        className="
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={onNewPlan}
+            leftIcon={<Plus size={15} />}
+            className="
                             h-9
                             px-3.5
                             whitespace-nowrap
                             shrink-0
                             rounded-xl
                         "
-                    >
-                        New Plan
-                    </Button>
+          >
+            New Plan
+          </Button>
 
-                    {/* Utils Icon */}
-                    <div className="ml-1 flex items-center gap-1">
-                        {/* Settings */}
+          {/* Utils Icon */}
+          <div className="ml-1 flex items-center gap-1">
+            {/* Settings */}
 
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="
+            <Button
+              variant="ghost"
+              size="sm"
+              className="
                                 w-10
                                 h-10
                                 px-0
                                 shrink-0
                             "
-                        >
-                            <Settings size={18} />
-                        </Button>
+            >
+              <Settings size={18} />
+            </Button>
 
+            {/* Notifications */}
 
-                        {/* Notifications */}
-
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="
+            <Button
+              variant="ghost"
+              size="sm"
+              className="
                                 relative
 
                                 w-10
@@ -214,11 +206,11 @@ export default function TopBar() {
                                 px-0
                                 shrink-0
                             "
-                        >
-                            <Bell size={18} />
+            >
+              <Bell size={18} />
 
-                            <span
-                                className="
+              <span
+                className="
                                     absolute
                                     top-1.5
                                     right-1.5
@@ -230,16 +222,15 @@ export default function TopBar() {
 
                                     bg-indigo-400
                                 "
-                            />
-                        </Button>
+              />
+            </Button>
 
+            {/* Profile */}
 
-                        {/* Profile */}
-
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="
+            <Button
+              variant="ghost"
+              size="sm"
+              className="
                                 w-8
                                 h-8
                                 px-0
@@ -254,20 +245,19 @@ export default function TopBar() {
 
                                 text-white
                             "
-                        >
-                            Q
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            >
+              Q
+            </Button>
+          </div>
+        </div>
+      </div>
 
+      {/* ================================= */}
+      {/* MOBILE ACTION ROW */}
+      {/* ================================= */}
 
-            {/* ================================= */}
-            {/* MOBILE ACTION ROW */}
-            {/* ================================= */}
-
-            <div
-                className="
+      <div
+        className="
                     flex
                     md:hidden
 
@@ -279,20 +269,15 @@ export default function TopBar() {
                     pb-3
                     pt-1
                 "
-            >
+      >
+        {/* Date */}
 
-                {/* Date */}
-
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    leftIcon={
-                        <CalendarDays size={14} />
-                    }
-                    rightIcon={
-                        <ChevronDown size={13} />
-                    }
-                    className="
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon={<CalendarDays size={14} />}
+          rightIcon={<ChevronDown size={13} />}
+          className="
                         flex-1
                         h-9
                         justify-center
@@ -301,31 +286,50 @@ export default function TopBar() {
                         border-white/[0.08]
                         bg-white/[0.035]
                     "
-                >
-                    This Week
-                </Button>
+        >
+          This Week
+        </Button>
 
+        {/* New Plan */}
 
-                {/* New Plan */}
-
-                <Button
-                    variant="primary"
-                    size="sm"
-                    leftIcon={
-                        <Plus size={15} />
-                    }
-                    className="
+        <Button
+          variant="primary"
+          size="sm"
+          leftIcon={<Plus size={15} />}
+          onClick={onNewPlan}
+          className="
                         h-9
                         px-4
                         shrink-0
                         rounded-xl
                     "
-                >
-                    New Plan
-                </Button>
+        >
+          New Plan
+        </Button>
+      </div>
 
-            </div>
+      {notification && (
+        <div className="fixed top-5 right-5 z-[100]">
+          <div
+            className="
+                rounded-xl
+                border
+                border-white/[0.08]
+                bg-[#15151c]
+                px-4
+                py-3
+                shadow-2xl
+                backdrop-blur-xl
+            "
+          >
+            <p className="text-sm font-medium text-white">{notification}</p>
 
-        </header>
-    );
+            <p className="mt-1 text-xs text-slate-400">
+              Your plan has been saved successfully.
+            </p>
+          </div>
+        </div>
+      )}
+    </header>
+  );
 }

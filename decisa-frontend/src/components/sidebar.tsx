@@ -1,41 +1,47 @@
 import {
-    BarChart3,
-    Bell,
-    CalendarDays,
-    CheckSquare,
-    CircleHelp,
-    Clock3,
-    Goal,
-    LayoutDashboard,
-    MessageSquare,
-    Search,
-    Settings,
-    Sparkles,
-    UserCircle,
-    ListTodo,
-    Zap,
-    ChevronRight,
+  BarChart3,
+  CalendarDays,
+  CheckSquare,
+  CircleHelp,
+  Clock3,
+  Goal,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Sparkles,
+  UserCircle,
+  ListTodo,
+  Zap,
+  ChevronRight,
+  X,
+  LogOut,
 } from "lucide-react";
 
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/auth-context";
 
 interface SidebarItemProps {
-    icon: React.ReactNode;
-    label: string;
-    active?: boolean;
-    onClick?: () => void;
+  icon: React.ReactNode;
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}
+
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 function SidebarItem({
-    icon,
-    label,
-    active = false,
-    onClick,
+  icon,
+  label,
+  active = false,
+  onClick,
 }: SidebarItemProps) {
-    return (
-        <button
-            onClick={onClick}
-            className={`
+  return (
+    <button
+      onClick={onClick}
+      className={`
                 group
                 w-full
                 h-9
@@ -55,12 +61,12 @@ function SidebarItem({
                 duration-200
 
                 ${
-                    active
-                        ? `
+                  active
+                    ? `
                             bg-indigo-500/10
                             text-indigo-400
                         `
-                        : `
+                    : `
                             text-slate-400
 
                             hover:bg-white/[0.04]
@@ -68,43 +74,64 @@ function SidebarItem({
                         `
                 }
             `}
-        >
-            <span
-                className={`
+    >
+      <span
+        className={`
                     transition-colors
 
                     ${
-                        active
-                            ? "text-indigo-400"
-                            : "text-slate-500 group-hover:text-slate-300"
+                      active
+                        ? "text-indigo-400"
+                        : "text-slate-500 group-hover:text-slate-300"
                     }
                 `}
-            >
-                {icon}
-            </span>
+      >
+        {icon}
+      </span>
 
-            <span>
-                {label}
-            </span>
-        </button>
-    );
+      <span>{label}</span>
+    </button>
+  );
 }
 
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-export default function Sidebar() {
-    const navigate = useNavigate()
-    const location = useLocation()
-    return (
-        <aside
-            className="
+  const { user, logout } = useAuth();
+
+  async function handleLogout() {
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }
+
+  return (
+    <>
+      {isOpen && (
+        <div
+          className="
+                    fixed
+                    inset-0
+                    z-40
+                    bg-black/50
+                    backdrop-blur-sm
+                    lg:hidden
+                "
+          onClick={onClose}
+        />
+      )}
+      <aside
+        className={`
                 fixed
                 left-0
                 top-0
                 z-50
 
-                hidden
-                lg:flex
-
+                flex
                 h-screen
                 w-64
 
@@ -113,23 +140,28 @@ export default function Sidebar() {
                 border-r
                 border-white/10
 
-                bg-[#09090B]/70
+                bg-[#09090B]/95
                 backdrop-blur-2xl
-            "
-        >
 
-            {/* ================================= */}
-            {/* LOGO */}
-            {/* ================================= */}
+                transform
+                transition-transform
+                duration-300
 
-            <div className="px-5 pt-5 pb-4">
+                lg:translate-x-0
 
-                <div className="flex items-center gap-3">
+                ${isOpen ? "translate-x-0" : "-translate-x-full"}
+            `}
+      >
+        {/* ================================= */}
+        {/* LOGO */}
+        {/* ================================= */}
 
-                    {/* Logo Icon */}
+        <div className="px-5 pt-5 pb-4">
+          <div className="flex items-center justify-between gap-3">
+            {/* Logo Icon */}
 
-                    <div
-                        className="
+            <div
+              className="
                             relative
 
                             w-9
@@ -148,51 +180,65 @@ export default function Sidebar() {
                             shadow-lg
                             shadow-indigo-500/20
                         "
-                    >
-                        <Sparkles
-                            size={18}
-                            className="text-white"
-                        />
-                    </div>
+            >
+              <Sparkles size={18} className="text-white" />
+            </div>
 
+            {/* Logo Text */}
 
-                    {/* Logo Text */}
-
-                    <div>
-
-                        <h1
-                            className="
+            <div>
+              <h1
+                className="
                                 text-sm
                                 font-semibold
                                 tracking-tight
                                 text-white
                             "
-                        >
-                            Decisa AI
-                        </h1>
+              >
+                Decisa AI
+              </h1>
 
-                        <p
-                            className="
+              <p
+                className="
                                 mt-0.5
                                 text-[10px]
                                 text-slate-500
                             "
-                        >
-                            AI Decision Assistant
-                        </p>
-
-                    </div>
-
-                </div>
-
+              >
+                AI Decision Assistant
+              </p>
             </div>
+            <button
+              onClick={onClose}
+              className="
+                    flex
+                    lg:hidden
 
+                    h-10
+                    w-10
 
-            {/* ================================= */}
-            {/* SEARCH */}
-            {/* ================================= */}
+                    items-center
+                    justify-center
 
-            {/* <div className="px-4 mb-5">
+                    rounded-lg
+
+                    text-slate-400
+                    hover:bg:white/[0.06]
+                    hover:text-white
+
+                    transition
+                "
+            >
+              <X size={17} />
+            </button>
+          </div>
+        </div>
+
+        {/* ================================= */}
+        {/* SEARCH */}
+        {/* ================================= */}
+
+        {/* <div className="px-4 mb-5">
 
                 <button
                     className="
@@ -250,99 +296,93 @@ export default function Sidebar() {
 
             </div> */}
 
+        {/* ================================= */}
+        {/* NAVIGATION */}
+        {/* ================================= */}
 
-            {/* ================================= */}
-            {/* NAVIGATION */}
-            {/* ================================= */}
-
-            <nav
-                className="
+        <nav
+          className="
                     flex-1
 
                     px-3
 
                     overflow-y-auto
                 "
-            >
+        >
+          {/* MAIN */}
 
-                {/* MAIN */}
+          <div className="space-y-1">
+            <SidebarItem
+              icon={<LayoutDashboard size={16} />}
+              label="Dashboard"
+              active={location.pathname === "/dashboard"}
+              onClick={() => navigate("/dashboard")}
+            />
 
-                <div className="space-y-1">
+            <SidebarItem
+              icon={<ListTodo size={16} />}
+              label="Plans"
+              active={location.pathname.startsWith("/plans")}
+              onClick={() => navigate("/plans")}
+            />
 
-                    <SidebarItem
-                        icon={<LayoutDashboard size={16} />}
-                        label="Dashboard"
-                        active={location.pathname === "/dashboard"}
-                        onClick={() => navigate("/dashboard")}
-                    />
+            <SidebarItem
+              icon={<CheckSquare size={16} />}
+              label="Tasks"
+              active={location.pathname.startsWith("/tasks")}
+              onClick={() => navigate("/tasks")}
+            />
 
-                    <SidebarItem
-                        icon={<ListTodo size={16} />}
-                        label="Plans"
-                        active={location.pathname.startsWith("/plans")}
-                        onClick={() => navigate("/plans")}
-                    />
+            <SidebarItem
+              icon={<CalendarDays size={16} />}
+              label="Calendar"
+              active={location.pathname.startsWith("/calendar")}
+              onClick={() => navigate("/calendar")}
+            />
 
-                    <SidebarItem
-                        icon={<CheckSquare size={16} />}
-                        label="Tasks"
-                        active={location.pathname.startsWith("/tasks")}
-                        onClick={() => navigate("/tasks")}
-                    />
+            <SidebarItem
+              icon={<Goal size={16} />}
+              label="Goals"
+              active={location.pathname.startsWith("/goals")}
+              onClick={() => navigate("/goals")}
+            />
 
-                    <SidebarItem
-                        icon={<CalendarDays size={16} />}
-                        label="Calendar"
-                        active={location.pathname.startsWith("/calendar")}
-                        onClick={() => navigate("/calendar")}
-                    />
+            <SidebarItem
+              icon={<BarChart3 size={16} />}
+              label="Analytics"
+              active={location.pathname.startsWith("/analytics")}
+              onClick={() => navigate("/analytics")}
+            />
 
-                    <SidebarItem
-                        icon={<Goal size={16} />}
-                        label="Goals"
-                        active={location.pathname.startsWith("/goals")}
-                        onClick={() => navigate("/goals")}
-                    />
+            <SidebarItem
+              icon={<MessageSquare size={16} />}
+              label="AI Chat"
+              active={location.pathname.startsWith("/ai-chat")}
+              onClick={() => navigate("/ai-chat")}
+            />
 
-                    <SidebarItem
-                        icon={<BarChart3 size={16} />}
-                        label="Analytics"
-                        active={location.pathname.startsWith("/analytics")}
-                        onClick={() => navigate("/analytics")}
-                    />
+            <SidebarItem
+              icon={<Zap size={16} />}
+              label="Habits"
+              active={location.pathname.startsWith("/habits")}
+              onClick={() => navigate("/habits")}
+            />
 
-                    <SidebarItem
-                        icon={<MessageSquare size={16} />}
-                        label="AI Chat"
-                        active={location.pathname.startsWith("/ai-chat")}
-                        onClick={() => navigate("/ai-chat")}
-                    />
+            <SidebarItem
+              icon={<Clock3 size={16} />}
+              label="Focus Timer"
+              active={location.pathname.startsWith("/focus-timer")}
+              onClick={() => navigate("/focus-timer")}
+            />
+          </div>
 
-                    <SidebarItem
-                        icon={<Zap size={16} />}
-                        label="Habits"
-                        active={location.pathname.startsWith("/habits")}
-                        onClick={() => navigate("/habits")}
-                    />
+          {/* ================================= */}
+          {/* SETTINGS */}
+          {/* ================================= */}
 
-                    <SidebarItem
-                        icon={<Clock3 size={16} />}
-                        label="Focus Timer"
-                        active={location.pathname.startsWith("/focus-timer")}
-                        onClick={() => navigate("/focus-timer")}
-                    />
-
-                </div>
-
-
-                {/* ================================= */}
-                {/* SETTINGS */}
-                {/* ================================= */}
-
-                <div className="mt-7">
-
-                    <p
-                        className="
+          <div className="mt-7">
+            <p
+              className="
                             px-3
                             mb-2
 
@@ -351,42 +391,35 @@ export default function Sidebar() {
 
                             text-slate-600
                         "
-                    >
-                        Settings
-                    </p>
+            >
+              Settings
+            </p>
 
+            <div className="space-y-1">
+              <SidebarItem
+                icon={<Settings size={16} />}
+                label="Settings"
+                active={location.pathname.startsWith("/settings")}
+                onClick={() => navigate("/settings")}
+              />
 
-                    <div className="space-y-1">
+              <SidebarItem
+                icon={<UserCircle size={16} />}
+                label="Profile"
+                active={location.pathname.startsWith("/profile")}
+                onClick={() => navigate("/profile")}
+              />
+            </div>
+          </div>
+        </nav>
 
-                        <SidebarItem
-                            icon={<Settings size={16} />}
-                            label="Settings"
-                            active={location.pathname.startsWith("/settings")}
-                            onClick={() => navigate("/settings")}
-                        />
+        {/* ================================= */}
+        {/* UPGRADE CARD */}
+        {/* ================================= */}
 
-                        <SidebarItem
-                            icon={<UserCircle size={16} />}
-                            label="Profile"
-                            active={location.pathname.startsWith("/profile")}
-                            onClick={() => navigate("/profile")}
-                        />
-
-                    </div>
-
-                </div>
-
-            </nav>
-
-
-            {/* ================================= */}
-            {/* UPGRADE CARD */}
-            {/* ================================= */}
-
-            <div className="px-3 pb-3">
-
-                <div
-                    className="
+        <div className="px-3 pb-3">
+          <div
+            className="
                         p-4
 
                         rounded-xl
@@ -396,12 +429,10 @@ export default function Sidebar() {
 
                         bg-indigo-500/[0.04]
                     "
-                >
-
-                    <div className="flex items-start gap-3">
-
-                        <div
-                            className="
+          >
+            <div className="flex items-start gap-3">
+              <div
+                className="
                                 w-7
                                 h-7
 
@@ -417,25 +448,23 @@ export default function Sidebar() {
 
                                 text-indigo-400
                             "
-                        >
-                            <Sparkles size={14} />
-                        </div>
+              >
+                <Sparkles size={14} />
+              </div>
 
-
-                        <div>
-
-                            <p
-                                className="
+              <div>
+                <p
+                  className="
                                     text-xs
                                     font-semibold
                                     text-white
                                 "
-                            >
-                                Upgrade to Pro
-                            </p>
+                >
+                  Upgrade to Pro
+                </p>
 
-                            <p
-                                className="
+                <p
+                  className="
                                     mt-1
 
                                     text-[10px]
@@ -443,18 +472,14 @@ export default function Sidebar() {
 
                                     text-slate-500
                                 "
-                            >
-                                Unlock unlimited AI insights,
-                                advanced analytics, and more.
-                            </p>
+                >
+                  Unlock unlimited AI insights, advanced analytics, and more.
+                </p>
+              </div>
+            </div>
 
-                        </div>
-
-                    </div>
-
-
-                    <button
-                        className="
+            <button
+              className="
                             mt-3
 
                             w-full
@@ -472,23 +497,19 @@ export default function Sidebar() {
 
                             transition
                         "
-                    >
-                        Upgrade Now
-                    </button>
+            >
+              Upgrade Now
+            </button>
+          </div>
+        </div>
 
-                </div>
+        {/* ================================= */}
+        {/* HELP */}
+        {/* ================================= */}
 
-            </div>
-
-
-            {/* ================================= */}
-            {/* HELP */}
-            {/* ================================= */}
-
-            <div className="px-3 pb-4">
-
-                <button
-                    className="
+        <div className="px-3 pb-4">
+          <button
+            className="
                         w-full
                         h-9
 
@@ -508,23 +529,95 @@ export default function Sidebar() {
 
                         transition
                     "
-                >
+          >
+            <CircleHelp size={16} />
 
-                    <CircleHelp size={16} />
+            <span>Help & Support</span>
 
-                    <span>
-                        Help & Support
-                    </span>
+            <ChevronRight size={14} className="ml-auto" />
+          </button>
+        </div>
 
-                    <ChevronRight
-                        size={14}
-                        className="ml-auto"
-                    />
+        {/* ================================= */}
+        {/* USER / LOGOUT */}
+        {/* ================================= */}
 
-                </button>
+        <div className="border-t border-white/10 px-3 py-3">
+          <div className="flex items-center gap-3">
+            {/* Avatar */}
+            <div
+              className="
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
 
+                overflow-hidden
+                rounded-full
+
+                bg-indigo-500/10
+
+                text-sm
+                font-semibold
+                text-indigo-400
+            "
+            >
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.displayName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                (user?.displayName?.charAt(0).toUpperCase() ?? "U")
+              )}
             </div>
 
-        </aside>
-    );
+            {/* User info */}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium text-slate-200">
+                {user?.displayName ?? "User"}
+              </p>
+
+              <p className="mt-0.5 truncate text-[10px] text-slate-500">
+                {user?.email ?? ""}
+              </p>
+            </div>
+          </div>
+
+          {/* Logout */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="
+            mt-2
+
+            flex
+            h-9
+            w-full
+            items-center
+            gap-3
+
+            rounded-lg
+            px-3
+
+            text-xs
+            text-slate-500
+
+            transition
+
+            hover:bg-red-500/[0.06]
+            hover:text-red-400
+        "
+          >
+            <LogOut size={16} />
+
+            <span>Log out</span>
+          </button>
+        </div>
+      </aside>
+    </>
+  );
 }
