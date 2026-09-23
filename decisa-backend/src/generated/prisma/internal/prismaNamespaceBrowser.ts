@@ -136,7 +136,6 @@ export const PlanScalarFieldEnum = {
   status: 'status',
   priority: 'priority',
   progress: 'progress',
-  startDate: 'startDate',
   dueDate: 'dueDate',
   completedAt: 'completedAt',
   icon: 'icon',

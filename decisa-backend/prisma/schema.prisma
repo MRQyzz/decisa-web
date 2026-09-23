@@ -114,7 +114,6 @@ model Plan {
 
   progress Decimal @default(0) @db.Decimal(5, 2)
 
-  startDate DateTime? @map("start_date")
   dueDate   DateTime? @map("due_date")
 
   completedAt DateTime? @map("completed_at")

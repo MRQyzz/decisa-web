@@ -1,35 +1,27 @@
+import type { ReactNode } from "react";
 import {
-  BarChart3,
-  CalendarDays,
   CheckSquare,
-  CircleHelp,
-  Clock3,
   Goal,
   LayoutDashboard,
-  MessageSquare,
-  Settings,
-  Sparkles,
-  UserCircle,
   ListTodo,
-  Zap,
-  ChevronRight,
-  X,
   LogOut,
+  Sparkles,
+  X,
 } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 
-interface SidebarItemProps {
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-  onClick?: () => void;
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface SidebarItemProps {
+  icon: ReactNode;
+  label: string;
+  active?: boolean;
+  onClick: () => void;
 }
 
 function SidebarItem({
@@ -40,582 +32,274 @@ function SidebarItem({
 }: SidebarItemProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`
-                group
-                w-full
-                h-9
-
-                flex
-                items-center
-                gap-3
-
-                px-3
-
-                rounded-lg
-
-                text-[13px]
-                font-medium
-
-                transition-all
-                duration-200
-
-                ${
-                  active
-                    ? `
-                            bg-indigo-500/10
-                            text-indigo-400
-                        `
-                    : `
-                            text-slate-400
-
-                            hover:bg-white/[0.04]
-                            hover:text-slate-200
-                        `
-                }
-            `}
+        group
+        flex
+        h-10
+        w-full
+        items-center
+        gap-3
+        rounded-xl
+        px-3
+        text-[13px]
+        font-medium
+        transition-all
+        duration-200
+        ${
+          active
+            ? "bg-indigo-500/10 text-indigo-400"
+            : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
+        }
+      `}
     >
       <span
-        className={`
-                    transition-colors
-
-                    ${
-                      active
-                        ? "text-indigo-400"
-                        : "text-slate-500 group-hover:text-slate-300"
-                    }
-                `}
+        className={
+          active
+            ? "text-indigo-400"
+            : "text-slate-500 group-hover:text-slate-300"
+        }
       >
         {icon}
       </span>
 
-      <span>{label}</span>
+      {label}
     </button>
   );
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({
+  isOpen = false,
+  onClose,
+}: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
 
-  const { user, logout } = useAuth();
+  const goTo = (path: string) => {
+    navigate(path);
+    onClose?.();
+  };
 
-  async function handleLogout() {
+  const isActive = (path: string) => {
+    if (path === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+
+    return location.pathname.startsWith(path);
+  };
+
+  const handleLogout = async () => {
     try {
       await logout();
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
+    } finally {
+      onClose?.();
+      navigate("/login", { replace: true });
     }
-  }
+  };
 
   return (
     <>
+      {/* Mobile overlay */}
       {isOpen && (
-        <div
-          className="
-                    fixed
-                    inset-0
-                    z-40
-                    bg-black/50
-                    backdrop-blur-sm
-                    lg:hidden
-                "
+        <button
+          type="button"
+          aria-label="Close sidebar"
           onClick={onClose}
+          className="
+            fixed
+            inset-0
+            z-40
+            bg-black/60
+            backdrop-blur-sm
+            lg:hidden
+          "
         />
       )}
+
       <aside
         className={`
-                fixed
-                left-0
-                top-0
-                z-50
-
-                flex
-                h-screen
-                w-64
-
-                flex-col
-
-                border-r
-                border-white/10
-
-                bg-[#09090B]/95
-                backdrop-blur-2xl
-
-                transform
-                transition-transform
-                duration-300
-
-                lg:translate-x-0
-
-                ${isOpen ? "translate-x-0" : "-translate-x-full"}
-            `}
+          fixed
+          left-0
+          top-0
+          z-50
+          flex
+          h-screen
+          w-64
+          flex-col
+          border-r
+          border-white/[0.07]
+          bg-[#09090B]
+          transition-transform
+          duration-200
+          lg:translate-x-0
+          ${
+            isOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+          }
+        `}
       >
-        {/* ================================= */}
-        {/* LOGO */}
-        {/* ================================= */}
-
-        <div className="px-5 pt-5 pb-4">
-          <div className="flex items-center justify-between gap-3">
-            {/* Logo Icon */}
-
-            <div
-              className="
-                            relative
-
-                            w-9
-                            h-9
-
-                            flex
-                            items-center
-                            justify-center
-
-                            rounded-xl
-
-                            bg-gradient-to-br
-                            from-indigo-400
-                            to-violet-500
-
-                            shadow-lg
-                            shadow-indigo-500/20
-                        "
-            >
-              <Sparkles size={18} className="text-white" />
-            </div>
-
-            {/* Logo Text */}
-
-            <div>
-              <h1
+        {/* BRAND */}
+        <div className="px-5 pb-5 pt-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div
                 className="
-                                text-sm
-                                font-semibold
-                                tracking-tight
-                                text-white
-                            "
-              >
-                Decisa AI
-              </h1>
-
-              <p
-                className="
-                                mt-0.5
-                                text-[10px]
-                                text-slate-500
-                            "
-              >
-                AI Decision Assistant
-              </p>
-            </div>
-            <button
-              onClick={onClose}
-              className="
-                    flex
-                    lg:hidden
-
-                    h-10
-                    w-10
-
-                    items-center
-                    justify-center
-
-                    rounded-lg
-
-                    text-slate-400
-                    hover:bg:white/[0.06]
-                    hover:text-white
-
-                    transition
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-gradient-to-br
+                  from-indigo-400
+                  to-violet-500
+                  shadow-lg
+                  shadow-indigo-500/20
                 "
+              >
+                <Sparkles
+                  size={18}
+                  className="text-white"
+                />
+              </div>
+
+              <div>
+                <h1
+                  className="
+                    text-sm
+                    font-semibold
+                    tracking-tight
+                    text-white
+                  "
+                >
+                  Decisa AI
+                </h1>
+
+                <p className="mt-0.5 text-[10px] text-slate-500">
+                  AI Decision Assistant
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile close */}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close sidebar"
+              className="
+                flex
+                h-8
+                w-8
+                items-center
+                justify-center
+                rounded-lg
+                text-slate-500
+                transition
+                hover:bg-white/[0.05]
+                hover:text-white
+                lg:hidden
+              "
             >
               <X size={17} />
             </button>
           </div>
         </div>
 
-        {/* ================================= */}
-        {/* SEARCH */}
-        {/* ================================= */}
-
-        {/* <div className="px-4 mb-5">
-
-                <button
-                    className="
-                        w-full
-                        h-9
-
-                        flex
-                        items-center
-                        gap-2
-
-                        px-3
-
-                        rounded-lg
-
-                        border
-                        border-white/10
-
-                        bg-white/[0.025]
-
-                        text-slate-500
-
-                        hover:border-white/15
-                        hover:bg-white/[0.04]
-
-                        transition
-                    "
-                >
-
-                    <Search size={14} />
-
-                    <span className="text-xs">
-                        Search
-                    </span>
-
-                    <span
-                        className="
-                            ml-auto
-
-                            px-1.5
-                            py-0.5
-
-                            rounded
-
-                            border
-                            border-white/10
-
-                            text-[9px]
-                            text-slate-600
-                        "
-                    >
-                        ⌘K
-                    </span>
-
-                </button>
-
-            </div> */}
-
-        {/* ================================= */}
         {/* NAVIGATION */}
-        {/* ================================= */}
-
-        <nav
-          className="
-                    flex-1
-
-                    px-3
-
-                    overflow-y-auto
-                "
-        >
-          {/* MAIN */}
+        <nav className="flex-1 px-3">
+          <p
+            className="
+              mb-2
+              px-3
+              text-[10px]
+              font-medium
+              uppercase
+              tracking-wider
+              text-slate-600
+            "
+          >
+            Workspace
+          </p>
 
           <div className="space-y-1">
             <SidebarItem
-              icon={<LayoutDashboard size={16} />}
+              icon={<LayoutDashboard size={17} />}
               label="Dashboard"
-              active={location.pathname === "/dashboard"}
-              onClick={() => navigate("/dashboard")}
+              active={isActive("/dashboard")}
+              onClick={() => goTo("/dashboard")}
             />
 
             <SidebarItem
-              icon={<ListTodo size={16} />}
+              icon={<ListTodo size={17} />}
               label="Plans"
-              active={location.pathname.startsWith("/plans")}
-              onClick={() => navigate("/plans")}
+              active={isActive("/plans")}
+              onClick={() => goTo("/plans")}
             />
 
             <SidebarItem
-              icon={<CheckSquare size={16} />}
+              icon={<CheckSquare size={17} />}
               label="Tasks"
-              active={location.pathname.startsWith("/tasks")}
-              onClick={() => navigate("/tasks")}
+              active={isActive("/tasks")}
+              onClick={() => goTo("/tasks")}
             />
 
             <SidebarItem
-              icon={<CalendarDays size={16} />}
-              label="Calendar"
-              active={location.pathname.startsWith("/calendar")}
-              onClick={() => navigate("/calendar")}
-            />
-
-            <SidebarItem
-              icon={<Goal size={16} />}
+              icon={<Goal size={17} />}
               label="Goals"
-              active={location.pathname.startsWith("/goals")}
-              onClick={() => navigate("/goals")}
+              active={isActive("/goals")}
+              onClick={() => goTo("/goals")}
             />
-
-            <SidebarItem
-              icon={<BarChart3 size={16} />}
-              label="Analytics"
-              active={location.pathname.startsWith("/analytics")}
-              onClick={() => navigate("/analytics")}
-            />
-
-            <SidebarItem
-              icon={<MessageSquare size={16} />}
-              label="AI Chat"
-              active={location.pathname.startsWith("/ai-chat")}
-              onClick={() => navigate("/ai-chat")}
-            />
-
-            <SidebarItem
-              icon={<Zap size={16} />}
-              label="Habits"
-              active={location.pathname.startsWith("/habits")}
-              onClick={() => navigate("/habits")}
-            />
-
-            <SidebarItem
-              icon={<Clock3 size={16} />}
-              label="Focus Timer"
-              active={location.pathname.startsWith("/focus-timer")}
-              onClick={() => navigate("/focus-timer")}
-            />
-          </div>
-
-          {/* ================================= */}
-          {/* SETTINGS */}
-          {/* ================================= */}
-
-          <div className="mt-7">
-            <p
-              className="
-                            px-3
-                            mb-2
-
-                            text-[10px]
-                            font-medium
-
-                            text-slate-600
-                        "
-            >
-              Settings
-            </p>
-
-            <div className="space-y-1">
-              <SidebarItem
-                icon={<Settings size={16} />}
-                label="Settings"
-                active={location.pathname.startsWith("/settings")}
-                onClick={() => navigate("/settings")}
-              />
-
-              <SidebarItem
-                icon={<UserCircle size={16} />}
-                label="Profile"
-                active={location.pathname.startsWith("/profile")}
-                onClick={() => navigate("/profile")}
-              />
-            </div>
           </div>
         </nav>
 
-        {/* ================================= */}
-        {/* UPGRADE CARD */}
-        {/* ================================= */}
-
-        <div className="px-3 pb-3">
-          <div
-            className="
-                        p-4
-
-                        rounded-xl
-
-                        border
-                        border-indigo-500/10
-
-                        bg-indigo-500/[0.04]
-                    "
-          >
-            <div className="flex items-start gap-3">
-              <div
-                className="
-                                w-7
-                                h-7
-
-                                shrink-0
-
-                                flex
-                                items-center
-                                justify-center
-
-                                rounded-lg
-
-                                bg-indigo-500/10
-
-                                text-indigo-400
-                            "
-              >
-                <Sparkles size={14} />
-              </div>
-
-              <div>
-                <p
-                  className="
-                                    text-xs
-                                    font-semibold
-                                    text-white
-                                "
-                >
-                  Upgrade to Pro
-                </p>
-
-                <p
-                  className="
-                                    mt-1
-
-                                    text-[10px]
-                                    leading-relaxed
-
-                                    text-slate-500
-                                "
-                >
-                  Unlock unlimited AI insights, advanced analytics, and more.
-                </p>
-              </div>
-            </div>
-
-            <button
-              className="
-                            mt-3
-
-                            w-full
-                            h-8
-
-                            rounded-lg
-
-                            bg-indigo-500
-
-                            text-[11px]
-                            font-medium
-                            text-white
-
-                            hover:bg-indigo-400
-
-                            transition
-                        "
-            >
-              Upgrade Now
-            </button>
-          </div>
-        </div>
-
-        {/* ================================= */}
-        {/* HELP */}
-        {/* ================================= */}
-
-        <div className="px-3 pb-4">
-          <button
-            className="
-                        w-full
-                        h-9
-
-                        flex
-                        items-center
-                        gap-3
-
-                        px-3
-
-                        rounded-lg
-
-                        text-xs
-                        text-slate-500
-
-                        hover:bg-white/[0.04]
-                        hover:text-slate-300
-
-                        transition
-                    "
-          >
-            <CircleHelp size={16} />
-
-            <span>Help & Support</span>
-
-            <ChevronRight size={14} className="ml-auto" />
-          </button>
-        </div>
-
-        {/* ================================= */}
-        {/* USER / LOGOUT */}
-        {/* ================================= */}
-
-        <div className="border-t border-white/10 px-3 py-3">
-          <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div
-              className="
-                flex
-                h-9
-                w-9
-                shrink-0
-                items-center
-                justify-center
-
-                overflow-hidden
-                rounded-full
-
-                bg-indigo-500/10
-
-                text-sm
-                font-semibold
-                text-indigo-400
-            "
-            >
-              {user?.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
-                  alt={user.displayName}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                (user?.displayName?.charAt(0).toUpperCase() ?? "U")
-              )}
-            </div>
-
-            {/* User info */}
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-medium text-slate-200">
-                {user?.displayName ?? "User"}
-              </p>
-
-              <p className="mt-0.5 truncate text-[10px] text-slate-500">
-                {user?.email ?? ""}
-              </p>
-            </div>
-          </div>
-
-          {/* Logout */}
+        {/* FOOTER */}
+        <div className="border-t border-white/[0.06] px-3 py-3">
+          {/* LOGOUT */}
           <button
             type="button"
             onClick={handleLogout}
             className="
-            mt-2
-
-            flex
-            h-9
-            w-full
-            items-center
-            gap-3
-
-            rounded-lg
-            px-3
-
-            text-xs
-            text-slate-500
-
-            transition
-
-            hover:bg-red-500/[0.06]
-            hover:text-red-400
-        "
+              group
+              flex
+              h-10
+              w-full
+              items-center
+              gap-3
+              rounded-xl
+              px-3
+              text-[13px]
+              font-medium
+              text-slate-400
+              transition-all
+              duration-200
+              hover:bg-red-500/[0.06]
+              hover:text-red-400
+            "
           >
-            <LogOut size={16} />
+            <LogOut
+              size={17}
+              className="
+                text-slate-500
+                transition-colors
+                group-hover:text-red-400
+              "
+            />
 
-            <span>Log out</span>
+            <span>Logout</span>
           </button>
+
+          <div className="mt-3 px-3">
+            <p className="text-[10px] font-medium text-slate-600">
+              Decisa AI
+            </p>
+
+            <p className="mt-1 text-[10px] text-slate-700">
+              Plan smarter. Decide better.
+            </p>
+          </div>
         </div>
       </aside>
     </>

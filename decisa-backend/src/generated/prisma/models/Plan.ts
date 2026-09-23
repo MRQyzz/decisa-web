@@ -42,7 +42,6 @@ export type PlanMinAggregateOutputType = {
   status: $Enums.PlanStatus | null
   priority: $Enums.Priority | null
   progress: runtime.Decimal | null
-  startDate: Date | null
   dueDate: Date | null
   completedAt: Date | null
   icon: string | null
@@ -59,7 +58,6 @@ export type PlanMaxAggregateOutputType = {
   status: $Enums.PlanStatus | null
   priority: $Enums.Priority | null
   progress: runtime.Decimal | null
-  startDate: Date | null
   dueDate: Date | null
   completedAt: Date | null
   icon: string | null
@@ -76,7 +74,6 @@ export type PlanCountAggregateOutputType = {
   status: number
   priority: number
   progress: number
-  startDate: number
   dueDate: number
   completedAt: number
   icon: number
@@ -103,7 +100,6 @@ export type PlanMinAggregateInputType = {
   status?: true
   priority?: true
   progress?: true
-  startDate?: true
   dueDate?: true
   completedAt?: true
   icon?: true
@@ -120,7 +116,6 @@ export type PlanMaxAggregateInputType = {
   status?: true
   priority?: true
   progress?: true
-  startDate?: true
   dueDate?: true
   completedAt?: true
   icon?: true
@@ -137,7 +132,6 @@ export type PlanCountAggregateInputType = {
   status?: true
   priority?: true
   progress?: true
-  startDate?: true
   dueDate?: true
   completedAt?: true
   icon?: true
@@ -241,7 +235,6 @@ export type PlanGroupByOutputType = {
   status: $Enums.PlanStatus
   priority: $Enums.Priority
   progress: runtime.Decimal
-  startDate: Date | null
   dueDate: Date | null
   completedAt: Date | null
   icon: string | null
@@ -281,7 +274,6 @@ export type PlanWhereInput = {
   status?: Prisma.EnumPlanStatusFilter<"Plan"> | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFilter<"Plan"> | $Enums.Priority
   progress?: Prisma.DecimalFilter<"Plan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   dueDate?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   icon?: Prisma.StringNullableFilter<"Plan"> | string | null
@@ -300,7 +292,6 @@ export type PlanOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   progress?: Prisma.SortOrder
-  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   icon?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -322,7 +313,6 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumPlanStatusFilter<"Plan"> | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFilter<"Plan"> | $Enums.Priority
   progress?: Prisma.DecimalFilter<"Plan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   dueDate?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   icon?: Prisma.StringNullableFilter<"Plan"> | string | null
@@ -341,7 +331,6 @@ export type PlanOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   progress?: Prisma.SortOrder
-  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   icon?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -366,7 +355,6 @@ export type PlanScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumPlanStatusWithAggregatesFilter<"Plan"> | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityWithAggregatesFilter<"Plan"> | $Enums.Priority
   progress?: Prisma.DecimalWithAggregatesFilter<"Plan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Plan"> | Date | string | null
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Plan"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Plan"> | Date | string | null
   icon?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
@@ -382,7 +370,6 @@ export type PlanCreateInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -401,7 +388,6 @@ export type PlanUncheckedCreateInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -418,7 +404,6 @@ export type PlanUpdateInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -437,7 +422,6 @@ export type PlanUncheckedUpdateInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -455,7 +439,6 @@ export type PlanCreateManyInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -471,7 +454,6 @@ export type PlanUpdateManyMutationInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -488,7 +470,6 @@ export type PlanUncheckedUpdateManyInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -515,7 +496,6 @@ export type PlanCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   progress?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   icon?: Prisma.SortOrder
@@ -536,7 +516,6 @@ export type PlanMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   progress?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   icon?: Prisma.SortOrder
@@ -553,7 +532,6 @@ export type PlanMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   progress?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   icon?: Prisma.SortOrder
@@ -652,7 +630,6 @@ export type PlanCreateWithoutUserInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -669,7 +646,6 @@ export type PlanUncheckedCreateWithoutUserInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -716,7 +692,6 @@ export type PlanScalarWhereInput = {
   status?: Prisma.EnumPlanStatusFilter<"Plan"> | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFilter<"Plan"> | $Enums.Priority
   progress?: Prisma.DecimalFilter<"Plan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   dueDate?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Plan"> | Date | string | null
   icon?: Prisma.StringNullableFilter<"Plan"> | string | null
@@ -732,7 +707,6 @@ export type PlanCreateWithoutTasksInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -750,7 +724,6 @@ export type PlanUncheckedCreateWithoutTasksInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -782,7 +755,6 @@ export type PlanUpdateWithoutTasksInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -800,7 +772,6 @@ export type PlanUncheckedUpdateWithoutTasksInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -816,7 +787,6 @@ export type PlanCreateManyUserInput = {
   status?: $Enums.PlanStatus
   priority?: $Enums.Priority
   progress?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Date | string | null
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   icon?: string | null
@@ -832,7 +802,6 @@ export type PlanUpdateWithoutUserInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -849,7 +818,6 @@ export type PlanUncheckedUpdateWithoutUserInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -866,7 +834,6 @@ export type PlanUncheckedUpdateManyWithoutUserInput = {
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   progress?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -914,7 +881,6 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   status?: boolean
   priority?: boolean
   progress?: boolean
-  startDate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   icon?: boolean
@@ -934,7 +900,6 @@ export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   priority?: boolean
   progress?: boolean
-  startDate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   icon?: boolean
@@ -952,7 +917,6 @@ export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   priority?: boolean
   progress?: boolean
-  startDate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   icon?: boolean
@@ -970,7 +934,6 @@ export type PlanSelectScalar = {
   status?: boolean
   priority?: boolean
   progress?: boolean
-  startDate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   icon?: boolean
@@ -979,7 +942,7 @@ export type PlanSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "description" | "status" | "priority" | "progress" | "startDate" | "dueDate" | "completedAt" | "icon" | "color" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
+export type PlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "description" | "status" | "priority" | "progress" | "dueDate" | "completedAt" | "icon" | "color" | "createdAt" | "updatedAt", ExtArgs["result"]["plan"]>
 export type PlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tasks?: boolean | Prisma.Plan$tasksArgs<ExtArgs>
@@ -1006,7 +969,6 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     status: $Enums.PlanStatus
     priority: $Enums.Priority
     progress: runtime.Decimal
-    startDate: Date | null
     dueDate: Date | null
     completedAt: Date | null
     icon: string | null
@@ -1445,7 +1407,6 @@ export interface PlanFieldRefs {
   readonly status: Prisma.FieldRef<"Plan", 'PlanStatus'>
   readonly priority: Prisma.FieldRef<"Plan", 'Priority'>
   readonly progress: Prisma.FieldRef<"Plan", 'Decimal'>
-  readonly startDate: Prisma.FieldRef<"Plan", 'DateTime'>
   readonly dueDate: Prisma.FieldRef<"Plan", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"Plan", 'DateTime'>
   readonly icon: Prisma.FieldRef<"Plan", 'String'>

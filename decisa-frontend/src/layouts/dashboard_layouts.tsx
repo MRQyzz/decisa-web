@@ -6,50 +6,42 @@ import TopBar from "../components/dashboard/topbar";
 import NewPlanModal from "../pages/plans/newPlansModal.tsx";
 
 export default function DashboardLayout() {
-  const [showNewPlanModal, setShowNewPlanModal] = useState(false);
+  const [showNewPlanModal, setShowNewPlanModal] =
+    useState(false);
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
 
-  const [notification, setNotification] = useState<string | null>(null);
-
-  const handleNewPlan = () => {
-    setShowNewPlanModal(true);
-  };
+  const [notification, setNotification] =
+    useState<string | null>(null);
 
   const handlePlanCreated = () => {
+    setShowNewPlanModal(false);
     setNotification("Plan berhasil dibuat.");
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       setNotification(null);
     }, 3000);
   };
 
   return (
     <div className="min-h-screen bg-[#09090B]">
-      {/* Sidebar */}
-
       <Sidebar
         isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)} 
+        onClose={() => setSidebarOpen(false)}
       />
 
-      {/* Main area */}
-
-      <div className="lg:ml-64">
-        <TopBar 
-            onNewPlan={handleNewPlan}
-            onMenuClick={() => setSidebarOpen(true)}
-            notification={notification}
+      <div className="min-h-screen lg:ml-64">
+        <TopBar
+          onNewPlan={() => setShowNewPlanModal(true)}
+          onMenuClick={() => setSidebarOpen(true)}
+          notification={notification}
         />
-
-        {/* Page content */}
 
         <main>
           <Outlet />
         </main>
       </div>
-
-      {/* New Plan Modal */}
 
       {showNewPlanModal && (
         <NewPlanModal

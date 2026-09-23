@@ -444,20 +444,7 @@ export default function Plans() {
                 </option>
               </select>
 
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="date"
-                  value={form.startDate}
-                  onChange={(event) =>
-                    setForm({
-                      ...form,
-                      startDate:
-                        event.target.value,
-                    })
-                  }
-                  className="h-10 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-sm text-white"
-                />
-
+              <div className="w-full">
                 <input
                   type="date"
                   value={form.dueDate}
@@ -468,7 +455,7 @@ export default function Plans() {
                         event.target.value,
                     })
                   }
-                  className="h-10 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-sm text-white"
+                  className="w-full h-10 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-sm text-white"
                 />
               </div>
 

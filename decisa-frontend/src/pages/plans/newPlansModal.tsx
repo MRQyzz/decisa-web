@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import { CalendarDays, ChevronDown, X } from "lucide-react";
 
 import Button from "../../components/ui/button.tsx";
@@ -11,7 +10,6 @@ type Plan = {
   status: "ACTIVE" | "COMPLETED" | "ARCHIVED";
   priority: "LOW" | "MEDIUM" | "HIGH";
   progress: string;
-  startDate: string | null;
   dueDate: string | null;
   createdAt: string;
   updatedAt: string;
@@ -20,7 +18,7 @@ type Plan = {
 interface NewPlanModalProps {
   onClose: () => void;
   onCreated: (plan: Plan) => void;
-  onUpdated:(plan: Plan) => void;
+  onUpdated: (plan: Plan) => void;
   editingPlan: Plan | null;
 }
 
@@ -43,11 +41,8 @@ export default function NewPlanModal({
       setTitle(editingPlan.title);
       setDescription(editingPlan.description ?? "");
       setPriority(editingPlan.priority);
-      setDueDate(
-        editingPlan.dueDate
-          ? editingPlan.dueDate.slice(0, 10)
-          : "",
-      );
+
+      setDueDate(editingPlan.dueDate ? editingPlan.dueDate.slice(0, 10) : "");
     } else {
       setTitle("");
       setDescription("");
@@ -71,31 +66,36 @@ export default function NewPlanModal({
       const planId = editingPlan?.id;
 
       const response = await fetch(
-          planId
-            ? `http://localhost:3000/api/plans/${planId}`
-            : "http://localhost:3000/api/plans", {
-        method: planId ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json",
+        planId
+          ? `http://localhost:3000/api/plans/${planId}`
+          : "http://localhost:3000/api/plans",
+        {
+          method: planId ? "PATCH" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: title.trim(),
+            description: description.trim() || undefined,
+            priority,
+            dueDate: dueDate || undefined,
+          }),
         },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim() || undefined,
-          priority,
-          dueDate: dueDate || undefined,
-        }),
-      });
+      );
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || (planId ? "Failed to updatePlan" : "Failed to create plan" ));
+        throw new Error(
+          result.message ||
+            (planId ? "Failed to update plan" : "Failed to create plan"),
+        );
       }
 
-      if(planId) {
+      if (planId) {
         onUpdated(result.data);
       } else {
-        onCreated?.(result.data);
+        onCreated(result.data);
       }
 
       onClose();
@@ -103,8 +103,8 @@ export default function NewPlanModal({
       console.error(error);
 
       setError(
-        error instanceof Error 
-          ? error.message 
+        error instanceof Error
+          ? error.message
           : editingPlan
             ? "Failed to update plan"
             : "Failed to create plan",
@@ -115,435 +115,119 @@ export default function NewPlanModal({
   }
 
   return (
-    <div
-      className="
-                fixed
-                inset-0
-                z-50
-
-                flex
-                items-center
-                justify-center
-
-                px-4
-                py-6
-
-
-                backdrop-blur-sm
-            "
-    >
-      {/* ================= MODAL ================= */}
-
-      <div
-        className="
-                    relative
-
-                    w-full
-                    max-w-[520px]
-
-                    max-h-[calc(100vh-48px)]
-                    overflow-y-auto
-
-                    rounded-2xl
-
-                    border
-                    border-white/10
-
-                    bg-[#0D0D12]/95
-                    backdrop-blur-2xl
-
-                "
-      >
-        {/* ================= HEADER ================= */}
-
-        <div
-          className="
-                        flex
-                        items-start
-                        justify-between
-
-                        px-6
-                        pt-6
-                        pb-5
-
-                        border-b
-                        border-white/[0.06]
-                    "
-        >
-          <div className="min-w-0">
-            <h2
-              className="
-                                text-lg
-                                font-semibold
-                                tracking-[-0.02em]
-                                text-white
-                            "
-            >
-              {editingPlan ? "Update Plan": "Create New Plan"}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#111116] shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
+          <div>
+            <h2 className="text-base font-semibold text-white">
+              {editingPlan ? "Update Goal" : "Create New Goal"}
             </h2>
 
-            <p
-              className="
-                                mt-1.5
-
-                                text-[13px]
-                                leading-5
-
-                                text-slate-400
-                            "
-            >
-              {editingPlan ? "Update your plan details." : "Tunr your intention into a structured plan."}
+            <p className="mt-1 text-xs text-slate-500">
+              {editingPlan
+                ? "Update the details of your goal."
+                : "Define something you want to achieve."}
             </p>
           </div>
 
-          {/* Close */}
-
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            type="button"
             onClick={onClose}
-            className="
-                            ml-4
-                            h-10
-                            w-10
-                            shrink-0
-                            p-0
-
-                            text-slate-500
-
-                            hover:bg-white/[0.025]
-                            hover:text-slate-200
-                        "
+            className="rounded-lg p-2 text-slate-500 transition hover:bg-white/5 hover:text-white"
           >
             <X size={17} />
-          </Button>
+          </button>
         </div>
 
-        {/* ================= FORM ================= */}
-
-        <div className="px-6 py-6">
-          {/* Plan Name */}
-
+        {/* Form */}
+        <div className="space-y-4 p-5">
+          {/* Title */}
           <div>
-            <label
-              className="
-                                block
-
-                                text-[12px]
-                                font-medium
-
-                                text-slate-300
-                            "
-            >
-              Plan name
+            <label className="mb-2 block text-xs font-medium text-slate-300">
+              Goal name
             </label>
 
             <input
-              type="text"
-              placeholder="e.g. Math Competition"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="
-                                mt-2
-
-                                h-10
-                                w-full
-
-                                rounded-lg
-
-                                border
-                                border-white/10
-
-                                bg-white/[0.035]
-
-                                px-3.5
-
-                                text-[13px]
-                                text-slate-100
-
-                                placeholder:text-slate-600
-
-                                outline-none
-
-                                transition-all
-                                duration-200
-
-                                focus:border-indigo-400/40
-                                focus:bg-white/[0.05]
-                                focus:ring-2
-                                focus:ring-indigo-500/10
-                            "
+              placeholder="e.g. Become an AI Engineer"
+              className="w-full rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-indigo-500/50"
             />
           </div>
 
           {/* Description */}
-
-          <div className="mt-5">
-            <label
-              className="
-                                block
-
-                                text-[12px]
-                                font-medium
-
-                                text-slate-300
-                            "
-            >
+          <div>
+            <label className="mb-2 block text-xs font-medium text-slate-300">
               Description
-              <span
-                className="
-                                    ml-1
-
-                                    font-normal
-                                    text-slate-600
-                                "
-              >
-                (optional)
-              </span>
             </label>
 
             <textarea
-              rows={4}
-              placeholder="What do you want to accomplish?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="
-                                mt-2
-
-                                w-full
-
-                                resize-none
-
-                                rounded-lg
-
-                                border
-                                border-white/10
-
-                                bg-white/[0.035]
-
-                                px-3.5
-                                py-3
-
-                                text-[13px]
-                                leading-5
-
-                                text-slate-100
-
-                                placeholder:text-slate-600
-
-                                outline-none
-
-                                transition-all
-                                duration-200
-
-                                focus:border-indigo-400/40
-                                focus:bg-white/[0.05]
-                                focus:ring-2
-                                focus:ring-indigo-500/10
-                            "
+              placeholder="Describe what you want to achieve..."
+              rows={4}
+              className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-indigo-500/50"
             />
           </div>
 
-          {/* Priority + Deadline */}
-
-          <div
-            className="
-                            mt-5
-
-                            grid
-                            grid-cols-1
-                            sm:grid-cols-2
-
-                            gap-4
-                        "
-          >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Priority */}
-
             <div>
-              <label
-                className="
-                                    block
-
-                                    text-[12px]
-                                    font-medium
-
-                                    text-slate-300
-                                "
-              >
+              <label className="mb-2 block text-xs font-medium text-slate-300">
                 Priority
               </label>
 
-              <div className="relative mt-2">
+              <div className="relative">
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
-                  className="
-                                        h-10
-                                        w-full
-
-                                        appearance-none
-
-                                        rounded-lg
-
-                                        border
-                                        border-white/10
-
-                                        bg-white/[0.035]
-
-                                        pl-3.5
-                                        pr-9
-
-                                        text-[13px]
-                                        text-slate-200
-
-                                        outline-none
-
-                                        transition-all
-                                        duration-200
-
-                                        focus:border-indigo-400/40
-                                        focus:bg-white/[0.05]
-                                        focus:ring-2
-                                        focus:ring-indigo-500/10
-                                    "
+                  className="w-full appearance-none rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-500/50"
                 >
-                  <option value="LOW" className="bg-[#0D0D12]">
-                    Low
-                  </option>
-
-                  <option value="MEDIUM" className="bg-[#0D0D12]">
-                    Medium
-                  </option>
-
-                  <option value="HIGH" className="bg-[#0D0D12]">
-                    High
-                  </option>
+                  <option value="LOW">LOW</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="HIGH">HIGH</option>
                 </select>
 
                 <ChevronDown
-                  size={14}
-                  className="
-                                        pointer-events-none
-
-                                        absolute
-                                        right-3
-                                        top-1/2
-
-                                        -translate-y-1/2
-
-                                        text-slate-500
-                                    "
+                  size={15}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
                 />
               </div>
             </div>
 
-            {/* Deadline */}
-
+            {/* Target date */}
             <div>
-              <label
-                className="
-                                    block
-
-                                    text-[12px]
-                                    font-medium
-
-                                    text-slate-300
-                                "
-              >
-                Deadline
+              <label className="mb-2 block text-xs font-medium text-slate-300">
+                Target date
               </label>
 
-              <div className="relative mt-2">
+              <div className="relative">
                 <CalendarDays
-                  size={14}
-                  className="
-                                        pointer-events-none
-
-                                        absolute
-                                        left-3
-                                        top-1/2
-
-                                        -translate-y-1/2
-
-                                        text-slate-300
-                                    "
+                  size={15}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
                 />
 
                 <input
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="
-                                        date-input
-
-                                        h-10
-                                        w-full
-
-                                        rounded-lg
-
-                                        border
-                                        border-white/10
-
-                                        bg-white/[0.035]
-
-                                        pl-9
-                                        pr-3
-
-                                        text-[13px]
-                                        text-slate-300
-
-                                        outline-none
-
-                                        transition-all
-                                        duration-200
-
-                                        focus:border-indigo-400/40
-                                        focus:bg-white/[0.05]
-                                        focus:ring-2
-                                        focus:ring-indigo-500/10
-                                    "
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.035] py-2.5 pl-9 pr-3 text-sm text-white outline-none focus:border-indigo-500/50"
                 />
               </div>
             </div>
           </div>
+
+          {error && <p className="text-xs text-red-400">{error}</p>}
         </div>
 
-        {error && <p className="px-6 pb-4 text-sm text-red-400">{error}</p>}
-
-        {/* ================= FOOTER ================= */}
-
-        <div
-          className="
-                        flex
-                        flex-col-reverse
-                        sm:flex-row
-
-                        sm:items-center
-                        sm:justify-end
-
-                        gap-2
-
-                        px-6
-                        py-4
-
-                        border-t
-                        border-white/[0.06]
-
-                        bg-white/[0.015]
-                    "
-        >
+        {/* Footer */}
+        <div className="flex justify-end gap-2 border-t border-white/5 px-5 py-4">
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={onClose}
-            className="
-                            w-full
-                            sm:w-auto
-
-                            text-slate-400
-
-                            hover:text-slate-200
-                        "
+            disabled={loading}
           >
             Cancel
           </Button>
@@ -553,20 +237,14 @@ export default function NewPlanModal({
             size="sm"
             onClick={handleSubmit}
             disabled={loading}
-            className="
-                            w-full
-                            sm:w-auto
-
-                            px-4
-                        "
           >
             {loading
               ? editingPlan
                 ? "Updating..."
                 : "Creating..."
               : editingPlan
-                ? "Update Plan"
-                : "Create Plan"}
+                ? "Update Goal"
+                : "Create Goal"}
           </Button>
         </div>
       </div>

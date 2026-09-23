@@ -21,7 +21,6 @@ const createPlanSchema = z.object({
     title: z.string().min(1).max(200),
     description: z.string().max(2000).optional(),
     priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
-    startDate: z.coerce.date().optional(),
     dueDate: z.coerce.date().optional(),
 });
 
@@ -29,7 +28,6 @@ const updatePlanSchema = z.object({
     title: z.string().min(1).max(200).optional(),
     description: z.string().max(2000).optional(),
     priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
-    startDate: z.coerce.date().optional(),
     dueDate: z.coerce.date().optional(),
 });
 
@@ -62,9 +60,7 @@ router.post(
                         description: result.data.description,
                     }),
 
-                    ...(result.data.startDate !== undefined && {
-                        startDate: result.data.startDate,
-                    }),
+
 
                     ...(result.data.dueDate !== undefined && {
                         dueDate: result.data.dueDate,
@@ -220,10 +216,6 @@ router.patch(
 
                     ...(result.data.priority !== undefined && {
                         priority: result.data.priority,
-                    }),
-
-                    ...(result.data.startDate !== undefined && {
-                        startDate: result.data.startDate,
                     }),
 
                     ...(result.data.dueDate !== undefined && {
